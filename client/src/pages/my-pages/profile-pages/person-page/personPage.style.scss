@@ -1,0 +1,37 @@
+
+.person_container {
+  .person_data {
+    display: grid;
+    justify-content: space-around;
+    margin-top: 50px;
+    grid-template-areas:
+    "A B"
+    "A B";
+  }
+  .data-item_container {
+    text-align: left;
+  }
+  .data-item {
+    font-size: 1.4rem;
+    color: #777;
+    margin-bottom: 30px;
+    text-align: left;
+  }
+  .value-item{
+    font-size: 1.8rem;
+    color: black;
+  }
+
+  input {
+    font-size: 1.8rem;
+    color: black;
+  }
+
+  button {
+    margin: 0 auto;
+  }
+
+  .exit_btn {
+    margin-top: 50px;
+  }
+}

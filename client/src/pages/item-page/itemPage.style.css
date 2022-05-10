@@ -1,0 +1,69 @@
+.grid_wrapper {
+  margin-top: 50px;
+  padding: 0 300px;
+  display: grid;
+  grid-template-columns: auto 1.5fr 1fr;
+  grid-template-rows: 1fr;
+}
+.grid_wrapper img {
+  border-radius: 10px;
+  margin-top: 20px;
+  height: 310px;
+  overflow: hidden;
+}
+.grid_wrapper .sidebar {
+  display: flex;
+  flex-direction: column;
+  margin-left: 30px;
+  margin-right: 30px;
+  min-height: 660px;
+}
+.grid_wrapper .sidebar img {
+  border-radius: 0;
+  height: 200px;
+}
+.grid_wrapper .sidebar img:hover {
+  cursor: pointer;
+}
+.grid_wrapper .item_image {
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.grid_wrapper .right_menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  font-size: 2rem;
+  margin-left: 30px;
+}
+.grid_wrapper .right_menu .item_opts {
+  height: 100%;
+  margin-top: -30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+.grid_wrapper .right_menu .item_opts .item_name {
+  text-align: center;
+}
+.grid_wrapper .right_menu .item_opts .item_description,
+.grid_wrapper .right_menu .item_opts .item_structure,
+.grid_wrapper .right_menu .item_opts .item_availability,
+.grid_wrapper .right_menu .item_opts .item_select {
+  font-size: 20px;
+}
+.grid_wrapper .right_menu .btn {
+  justify-self: flex-end;
+  width: 100%;
+}
+.grid_wrapper a {
+  color: green;
+  text-decoration: underline;
+  font-size: 0.7em;
+}
+
+/*# sourceMappingURL=itemPage.style.css.map */

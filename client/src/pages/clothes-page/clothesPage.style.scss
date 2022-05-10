@@ -1,0 +1,63 @@
+
+.clothes_list{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 30px;
+  padding: 0;
+  border: 0;
+  img{
+    border-radius: 10px;
+    margin-top: 20px;
+    height: 310px;
+    overflow: hidden;
+  }
+}
+
+.clothe_card{
+  /*border: 1px solid black;*/
+  /*border-radius: 20px;*/
+  display: flex;
+  flex-direction: column;
+  margin: 35px 17.5px;
+  -webkit-filter: drop-shadow(0 0 20px rgba(0,60,120,.06));
+  filter: drop-shadow(0 0 20px rgba(0,60,120,.06));
+  cursor: default;
+  width: 320px;
+
+}
+
+.clothe_card_cover{
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  contain: strict;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 450px;
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid #f3f3f3;
+  box-shadow: 0 0 7px -2px rgb(28 28 28 / 10%);
+  .card-name,
+  .card-price{
+    color: black;
+  }
+  .card-name{
+    font-size: 1.1rem;
+  }
+  .card-price{
+    font-weight: 500;
+    font-size: 1.5rem;
+    padding-top: 10px;
+  }
+}
+
+.clothe_card_cover:hover{
+  cursor: pointer;
+}
+
+.clothe_card_cover .btn{
+  margin-bottom: 50px;
+}
