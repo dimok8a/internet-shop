@@ -1,4 +1,4 @@
-# Internet shot of clothes
+# Internet shop of clothes
 Simple clothing store template 
 
 # Install
