@@ -1,5 +1,5 @@
-# internet-shop
-internet shop of clothes
+# Internet shot of clothes
+Simple clothing store template 
 
 # Install
 To install this project you have to write this in your terminal
