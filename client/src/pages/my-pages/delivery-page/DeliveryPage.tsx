@@ -4,7 +4,7 @@ import {DeliveryItem} from "../../../components/DeliveryItem";
 import {AuthContext} from "../../../context/AuthContext";
 import {useMessage} from "../../../hooks/message.hook";
 import {useHttp} from "../../../hooks/http.hook";
-import {Loading} from "../../../components/Loading";
+import {Loading} from "../../../components/loading/Loading";
 import "./deliveryPage.style.css"
 import {EmptyDelivery} from "../empty-delivery-page/EmptyDelivery";
 import {AuthPage} from "../profile-pages/auth-page/AuthPage";

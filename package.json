@@ -9,12 +9,15 @@
     "config": "^3.3.7",
     "express": "^4.17.3",
     "express-validator": "^6.14.0",
+    "fs": "0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "md5": "^2.3.0",
-    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
+    "readline": "^1.3.0",
     "sharp": "^0.30.3"
   },
   "devDependencies": {
+    "mysql-import": "^5.0.21",
     "nodemon": "^2.0.15"
   },
   "scripts": {

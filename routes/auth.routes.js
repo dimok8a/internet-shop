@@ -9,42 +9,48 @@ const auth = require('../middleware/auth.middleware')
 const db = new DataBase()
 router.post('/register',
     [
-        check('email', 'Некорректный email').isEmail()
+        check('email', 'Некорректный email').isEmail(),
+        check('name', 'Некорректное имя').exists(),
+        check('name', 'Некорректное имя').isLength({min: 3}),
+        check('phone', 'Некорректный номер телефона').isLength({min: 11, max:11}).isNumeric(),
+        check('address', 'Некорректный адресс').isLength({min: 5}),
     ],
-    (req, res) =>
+    async (req, res) =>
     {
         try {
-
             const errors = validationResult(req);
             if (!errors.isEmpty()){
+                let mapErrors = errors.mapped();
+                for (let mapErrorsKey in mapErrors) {
+                    mapErrors[mapErrorsKey] = mapErrors[mapErrorsKey].msg
+                }
                 return res.status(400).json({
-                    errors: errors.array(),
+                    errors: mapErrors,
                     message: "Некорректные данные при регистрации"
                 })
             }
 
-            const {email, hash} = req.body;
-            db.getUserByEmail(email).then(candidate => {
-                if (candidate)
+            const {email, name, phone, address, hash} = req.body;
+            const candidate = await db.getUserByEmailOrNumber(email, phone);
+            if (candidate)
+                if (candidate.phone_number === phone)
                     return res.status(400).json ({
-                        message: "Такой пользователь уже существует"
+                        message: "Пользователь с таким номер телефона уже существует"
                     })
-
-                const token = md5(Date.now().toString() + Math.random()*12323231);
-                db.registerUser(email, hash, token)
-                    .then((id) => {
-                        res.status(201).json({
-                            token, id
-                        })
+                else
+                    return res.status(400).json ({
+                        message: "Пользователь с таким e-mail уже существует"
                     })
-                    .catch(e => {
-                    res.status(500).json({
-                        message: "Ошибка при регистрации"
-                    })
+            const token = md5(Date.now().toString() + Math.random()*12323231);
+            const id = await db.registerUser(email, name, phone, address, hash, token);
+            if (id) {
+                return res.status(200).json ({
+                    id, token
                 })
-
-            });
-
+            }
+            return res.status(500).json({
+                message: "Ошибка при регистрации"
+            })
         } catch (e){
             console.log(e.message);
             res.status(500).json({
@@ -57,7 +63,7 @@ router.post('/login',
     [
         check('email', 'Некорректный email').isEmail()
     ],
-    (req, res) =>
+    async (req, res) =>
     {
         try {
 
@@ -71,30 +77,36 @@ router.post('/login',
             }
 
             const {email, hash, rand} = req.body;
-            db.getUserByEmail(email).then(candidate => {
-                if (candidate) {
-                    if (hash === md5(candidate.hash + rand)){
-                        const token = md5(Date.now().toString() + Math.random()*12323231);
-                        db.setTokenById(candidate.id, token)
-                            .then(() => {
-                                return res.json({token, id: candidate.id})
-                            })
-                            .catch(()=> {
-                                    return res.status(500).json({message: "Ошибка при авторизации"})
-                                }
-                            )
-                        return;
-                    }
-                    return res.status(400).json({
-                        message: "Неправильный пароль"
+            const candidate = await db.getUserByEmail(email);
+            if (!candidate)
+                return res.status(400).json(
+                    {
+                            message: "Неправильный пароль"
                     })
 
-                }
-                return res.status(400).json ({
-                    message: "Пользователя с таким email не существует"
-                })
+            return res.status(500).json({message: "Ошибка при авторизации"})
+                // if (candidate) {
+                //     if (hash === md5(candidate.hash + rand)){
+                //         const token = md5(Date.now().toString() + Math.random()*12323231);
+                //         db.setTokenById(candidate.id, token)
+                //             .then(() => {
+                //                 return res.json({token, id: candidate.id})
+                //             })
+                //             .catch(()=> {
+                //                     return res.status(500).json({message: "Ошибка при авторизации"})
+                //                 }
+                //             )
+                //         return;
+                //     }
+                //     return res.status(400).json({
+                //         message: "Неправильный пароль"
+                //     })
+                //
+                // }
+                // return res.status(400).json ({
+                //     message: "Пользователя с таким email не существует"
+                // })
 
-            });
 
         } catch (e){
             console.log(e.message);

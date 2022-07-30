@@ -1,0 +1,30 @@
+.message {
+  position: absolute;
+  margin-right: auto;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 15px 30px 20px;
+  color: white;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
+  right: 100px;
+  top: 100px;
+  max-width: 400px;
+  transition: all;
+  animation: message-animation 4s ease-out;
+  animation-fill-mode: both;
+  border-radius: 5px;
+}
+
+@keyframes message-animation {
+  0% {
+    transform: translateY(30px);
+  }
+  5% {
+    transform: none;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

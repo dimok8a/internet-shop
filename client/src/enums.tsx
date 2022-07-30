@@ -32,6 +32,7 @@ export const EUrl: { [id: string] : IUrl} = {
     pants : {url: "/pants", text: "Штаны"},
     polo : {url: "/polo", text: "Поло"},
     account : {url: "/account", text: "Мой аккаунт"},
+    registration : {url: "/registration", text: "Регистрация"},
     my : {url: "/my", text: "Мой аккаунт"},
     cart : {url: "/cart", text: "Моя корзина"},
     delivery : {url: "/delivery", text: "Товары в доставке"},

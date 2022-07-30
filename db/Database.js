@@ -1,96 +1,120 @@
-const mysql = require('mysql')
+const mysql = require('mysql2/promise')
+const Importer = require('mysql-import');
 
-
+const [host, user, password, database] = ['localhost', 'root', "", 'internet_shop']
 class Database {
     constructor() {
         if (Database.exists){
-            console.log(Database.instance)
             return Database.instance;
         }
-        this.db = mysql.createConnection({
-            host     : 'localhost',
-            user     : 'root',
-            password : '',
-            database : 'clothes'
-        })
-        this.db.connect(err => {
-            if (err) {
-                throw err;
-            }
-            Database.instance = this;
-            Database.exists = true;
-            console.log('Подключение к db выполнено успешно')
-        })
     }
 
-    // Получить цену вещи по sizes_price.id
-    getPrice(id){
-        const sql = `SELECT price FROM sizes_price WHERE id=${id}`
-        return new Promise((resolve) => {
-            this.db.query(sql, (err, result)=> {
-                if (err) throw err;
-                return resolve(result[0].price);
-            })
+    async init() {
+        await this.createDatabase();
+        this.db = await mysql.createConnection({
+            host,
+            user,
+            password,
+            database
         })
+        console.log('Database connected')
+        Database.exists = true;
+        Database.instance = this;
+    }
+
+    async createDatabase() {
+        const db = await mysql.createConnection({
+            host,
+            user,
+            password
+        })
+        await db.query('CREATE DATABASE IF NOT EXISTS clothes')
+        const importer = new Importer({host, user, password, database});
+        importer.import(`${database}.sql`).then(()=>{
+            const files_imported = importer.getImported();
+            console.log(`${files_imported.length} SQL file(s) imported.`);
+        }).catch(err=> {
+            // console.error(err);
+        });
+        db.end();
+    }
+
+    async query(sql) {
+        return (await this.db.query(sql))[0];
+    }
+
+    // id типа одежды по ее ссылке
+    async getClotheTypeId(clotheType) {
+        const sql = `SELECT id FROM clothe_types WHERE link = '${clotheType}'`
+        const [[{id}], _] = await this.db.query(sql);
+        return id;
     }
 
     // Получить все вещи типа clotheType
-    getAllClothes(clotheType) {
-        const sql = 'SELECT * FROM ' + "`" + clotheType + "`"
-        return new Promise((resolve) => {
-            this.db.query(sql, (err, result)=> {
-                if (err) throw err;
-                return resolve(result);
-            })
-        })
+    async getAllClothes(clotheType) {
+        const id = await this.getClotheTypeId(clotheType)
+        const sql = `SELECT 
+                    t1.id, 
+                    t1.price, 
+                    t1.name,
+                    t2.link AS image
+                    FROM 
+                    (SELECT * FROM clothes WHERE clothe_type_id = ${id}) t1
+                    INNER JOIN 
+                    (SELECT link, clothe_id FROM images GROUP BY clothe_id) t2
+                    ON t1.id = t2.clothe_id
+                    `
+        return (await this.db.query(sql))[0];
     }
 
-    // Получить все доступные вещи типа clotheType с ценниками
-    getAllClothesWithPrices(clotheType){
-        let clothes = [];
-        return new Promise(resolve => {
-            this.getAllClothes(clotheType).then(
-                result => {
-                    for (let key in result) {
-                        this.getPrice(result[key].sizes_price_id).then(
-                            price => {
-                                clothes.push({...result[key], "price": price})
-                                if (parseInt(key) === result.length-1){
-                                    return resolve(clothes);
-                                }
-                            }
-                        )
-                    }
-                });
-        })
+
+    // Получить вещь по и id
+    async getClotheById(id) {
+        const sql = `SELECT
+            id,
+            name,
+            price,
+            images,
+            description,
+            size_name,
+            size_count,
+            size_id
+            FROM 
+            (
+            SELECT 
+            GROUP_CONCAT (sizes.name SEPARATOR ', ') AS size_name,
+            GROUP_CONCAT (sizes_counts.count SEPARATOR ', ') AS size_count,
+            GROUP_CONCAT (sizes.id SEPARATOR ', ') AS size_id,
+            sizes_counts.clothe_id
+            FROM sizes, sizes_counts 
+            WHERE sizes_counts.size_id = sizes.id 
+            AND sizes_counts.clothe_id = ${id} GROUP BY sizes_counts.clothe_id) m1
+            INNER JOIN 
+            (SELECT 
+             t1.name, 
+            t1.price, 
+            t1.id, 
+            t1.description,
+            t2.links as images
+             FROM
+            (SELECT * FROM clothes WHERE id = ${id}) t1
+            INNER JOIN 
+            (SELECT GROUP_CONCAT(link SEPARATOR ', ') as links, clothe_id FROM images GROUP BY clothe_id) t2
+            ON t1.id = t2.clothe_id) m2
+            ON m2.id = m1.clothe_id`
+        const [result] = (await this.db.query(sql))[0];
+        result.sizes = result.size_name.split(', ').map((name, index) => ({
+            name,
+            count: result.size_count.split(', ')[index],
+            id: result.size_id.split(', ')[index]
+        }))
+        delete result.size_name
+        delete result.size_id
+        delete result.size_count
+        result.images = result.images.split(', ');
+        return result
     }
 
-    // Получить вещь по clotheType и id
-    getClotheById(clotheType, id) {
-        const sql = 'SELECT * FROM ' + "`" + clotheType + "`" + ` WHERE id=${id}`
-        return new Promise((resolve) => {
-            this.db.query(sql, (err, result)=> {
-                if (err) throw err;
-                return resolve(result[0]);
-            })
-        })
-    }
-
-    // Получить вещь с ценой по clotheType и id
-    getClotheByIdWithPrice(clotheType, id) {
-        return new Promise((resolve, reject) => {
-                this.getClotheById(clotheType, id).then( result => {
-                    if (result){
-                        this.getPrice(result.sizes_price_id).then(price => {
-                            const item = {...result, price};
-                            return resolve(item);
-                        })
-                    } else {
-                        reject(new Error('Такой одежды не существует'))
-                    }
-                })
-        })
-    }
 
 
     // Получить все sizes_counts_id по sizes_price.id
@@ -202,14 +226,10 @@ class Database {
     }
 
     // Возврат пользователя по email
-    getUserByEmail(email) {
-        const sql = `SELECT * FROM users WHERE email = '${email}'`
-        return new Promise(resolve=>{
-            this.db.query(sql, (err, result)=> {
-                if (err) throw err;
-                return resolve(result[0]);
-            })
-        })
+    async getUserByEmailOrNumber(email, phone) {
+        const sql = 'SELECT * FROM users WHERE `e-mail` =' + `'${email}' OR phone_number = ${phone}`
+        // Возвращаем первого пользователя
+        return (await this.query(sql))[0];
     }
 
     // Возврат пользователя по id
@@ -245,23 +265,11 @@ class Database {
         })
     }
 
-    // Регистрация
-    registerUser(email, hash, token) {
-        const sql = `INSERT INTO users (email, hash, token) VALUES ('${email}', '${hash}', '${token}')`
-        return new Promise((resolve)=>{
-            this.db.query(sql, (err, result)=> {
-                if (err) throw err;
-                const sql2 = 'INSERT INTO carts (items_ids) VALUES ("[]")'
-                this.db.query(sql2, (err2) => {
-                    if (err2) throw err2;
-                    const sql3 = 'INSERT INTO deliveries (delivery_items_ids) VALUES ("[]")'
-                    this.db.query(sql3, (err3) => {
-                        if (err3) throw err3;
-                        return resolve(result.insertId);
-                    })
-                })
-            })
-        })
+    // Возвращает id только что созданного пользователя
+    async registerUser(email, name, phone, address, hash, token) {
+        const sql = 'INSERT INTO users (`e-mail`, name, phone_number, address, hash, token)' +
+            ` VALUES ('${email}', '${name}', '${phone}', '${address}', '${hash}', '${token}')`
+        return (await this.query(sql))['insertId'];
     }
 
     // Поменять токен пользователя на указанный

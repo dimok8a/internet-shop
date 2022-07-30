@@ -15,7 +15,7 @@ export const Navbar:React.FunctionComponent = () => {
         })
     }, [])
 
-
+    // TODO: Переделать на Link
     return (
         <nav>
             <div className="nav-wrapper purple darken-4">
@@ -29,7 +29,7 @@ export const Navbar:React.FunctionComponent = () => {
                     <li><a className="right_link hide-on-med-and-down" href={`${EUrl.my.url}${EUrl.cart.url}`}><i className="center large material-icons">shopping_basket</i></a></li>
                     <li><a className="right_link hide-on-med-and-down" href={`${EUrl.my.url}${EUrl.delivery.url}`}><i className="center large material-icons">local_shipping</i></a></li>
                     <li className="account_link">
-                        <a className="right_link hide-on-med-and-down" href={`${EUrl.my.url}${EUrl.account.url}`}>
+                        <a className="right_link hide-on-med-and-down" href={`${EUrl.my.url}`}>
                             <i className="center large material-icons">account_circle</i>
                         </a>
                     </li>

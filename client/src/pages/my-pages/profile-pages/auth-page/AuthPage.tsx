@@ -1,11 +1,13 @@
 import React, {useState} from "react";
 import {useHttp} from "../../../../hooks/http.hook";
 import {useAuth} from "../../../../hooks/auth.hook";
+import "./RegistrationAuth.style.css"
 import {useMessage} from "../../../../hooks/message.hook";
 import {authPageLoginRequest} from "../../../../requests/profile-requests/auth-page-requests/auth-page-login-request";
 import {authPageRegisterRequest} from "../../../../requests/profile-requests/auth-page-requests/auth-page-register-request";
+import {Link} from "react-router-dom";
+import {EUrl} from "../../../../enums";
 const md5 = require("md5");
-
 export const AuthPage: React.FunctionComponent = () => {
 
     const {request} = useHttp();
@@ -37,69 +39,46 @@ export const AuthPage: React.FunctionComponent = () => {
             message(data.message)
             document.location.reload();
         } catch (e) {
-            message(e);
+            message((e as Error).message);
         }
 
     }
 
-    const registerHandler = async () => {
-        const newForm = {
-            email: form.email,
-            hash: md5(form.email+form.password)
-        }
-        try {
-            const data = await request(authPageRegisterRequest(), 'POST', {...newForm})
-            login(data.token, data.id);
-            message(data.message)
-            document.location.reload();
-        } catch (e) {
-            message(e)
-        }
-
-    }
 
     return (
-        <div className={"row"}>
-            <div className="col s6 offset-s3">
-                <div className="card blue darken-1">
-                    <div className="card-content white-text">
-                        <span className="card-title center">Авторизация</span>
-                        <div>
-                            <div className="input-field">
-                                <input placeholder="Введите email"
-                                       id="email"
-                                       type="text"
-                                       name="email"
-                                       className="validate yellow-input"
-                                       onChange={changeHandler}
-                                />
-                            </div>
-                            <div className="input-field">
-                                <input placeholder="Введите пароль"
-                                       id="password"
-                                       type="password"
-                                       name="password"
-                                       className="validate yellow-input"
-                                       onChange={changeHandler}
-                                />
-                            </div>
+        <div className="auth__container">
+            <div className="authorization">
+                <div id="auth__title">Авторизация</div>
+                <div className="login__container">
+                    <div className="login">
+                        <div className="login__cont">
+                            <input
+                                type="email"
+                                placeholder="E-mail"
+                                id="log"
+                                name="email"
+                                onChange={changeHandler}
+                            />
+                            <input
+                                type="password"
+                                placeholder="Пароль"
+                                id="pass"
+                                name="password"
+                                onChange={changeHandler}
+                            />
+                            <button
+                                id="btnLogin"
+                                onClick={loginHandler}
+                            >Войти</button>
                         </div>
                     </div>
-                    <div className="card-action">
-                        <button
-                            className="btn deep-purple darken-4"
-                            style={{marginRight : 10}}
-                            // disabled={loading}
-                            onClick={loginHandler}
-                        >Войти
-                        </button>
-                        <button
-                            className="btn grey lighten-1 black-text"
-                            onClick={registerHandler}
-                            // disabled={loading}
-                        >
-                            Регистрация
-                        </button>
+                    <div className="logout hide">
+                        <div className="logout__container hide">
+                            <button id="btnLogout">Выйти</button>
+                        </div>
+                    </div>
+                    <div id="registr_container">
+                        <Link to={'.' + EUrl.registration.url} id="registr_link">Регистрация</Link>
                     </div>
                 </div>
             </div>

@@ -59,7 +59,6 @@ export const Item: React.FunctionComponent<{ data: IClotheData, sizesInCart: num
         {
                 token,
                 id: userId,
-                productTypeId: data.product_type_id,
                 productId: data.id,
                 sizeId: selectSize.id
             },
@@ -86,15 +85,6 @@ export const Item: React.FunctionComponent<{ data: IClotheData, sizesInCart: num
                 <div className="item_opts">
                     <div className="item_name">{data.name}</div>
                     <div className="item_description">{data.description}</div>
-                    <div className="item_structure">Состав:
-                        {data.structure.map(obj => {
-                            const structArr = [];
-                            for (let key in obj){
-                                structArr.push(<li key={key}>{key} : {obj[key]}%</li>);
-                            }
-                            return structArr;
-                        })}
-                    </div>
                     <div className="item_price">{data.price} RUB</div>
                     <select onChange={selectItemHandler} className="item_select" name="size">
                         <option disabled>Выберите размер товара</option>

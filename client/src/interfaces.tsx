@@ -6,7 +6,7 @@ export interface IClothe {
     id: number,
     size: ESize,
     price: number,
-    images: string
+    image: string
 }
 
 interface ISize {
@@ -16,13 +16,11 @@ interface ISize {
 
 export interface IClotheData {
     name: string,
-    structure: { [name: string]: number }[],
     price: number,
     sizes: {
         id: number, name : string, count: number}[],
     images: string[],
     description: string,
-    product_type_id: number,
     id:number
 }
 

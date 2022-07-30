@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from "react";
 import {useAuth} from "../../../../hooks/auth.hook";
 import {useRoutes} from "../../../../methods/routes";
 import {AuthContext} from "../../../../context/AuthContext";
-import {Loading} from "../../../../components/Loading";
+import {Loading} from "../../../../components/loading/Loading";
 
 export const AccountPage: React.FunctionComponent = () => {
 

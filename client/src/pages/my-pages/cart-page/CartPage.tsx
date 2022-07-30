@@ -3,7 +3,7 @@ import {CartItem} from "../../../components/CartItem";
 import {useHttp} from "../../../hooks/http.hook";
 import {useAuth} from "../../../hooks/auth.hook";
 import {AuthContext} from "../../../context/AuthContext";
-import {Loading} from "../../../components/Loading";
+import {Loading} from "../../../components/loading/Loading";
 import {EmptyCart} from "../empty-cart-page/EmptyCart";
 import {useMessage} from "../../../hooks/message.hook";
 import {AuthPage} from "../profile-pages/auth-page/AuthPage";
