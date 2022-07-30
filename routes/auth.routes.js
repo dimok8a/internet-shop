@@ -3,7 +3,6 @@ const {Router} = require("express");
 const router = Router();
 const DataBase = require('../db/Database')
 const md5 = require("md5")
-const {add} = require("nodemon/lib/rules");
 const auth = require('../middleware/auth.middleware')
 
 const db = new DataBase()
