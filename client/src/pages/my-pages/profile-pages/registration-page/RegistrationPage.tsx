@@ -2,17 +2,18 @@ import React, {useState} from "react";
 import {
     authPageRegisterRequest
 } from "../../../../requests/profile-requests/auth-page-requests/auth-page-register-request";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useAuth} from "../../../../hooks/auth.hook";
 import {useMessage} from "../../../../hooks/message.hook";
 import {useHttp} from "../../../../hooks/http.hook";
+import {EUrl} from "../../../../enums";
 const md5 = require("md5");
 
 interface IInputError {
-    email: "",
-    name: "",
-    phone: "",
-    address: ""
+    email: string,
+    name: string,
+    phone: string,
+    address: string
 }
 
 interface IServerError {
@@ -20,10 +21,18 @@ interface IServerError {
     errors?: IInputError
 }
 
+const initialInputError = {
+    email: "",
+    name: "",
+    phone: "",
+    address: ""
+}
+
 export const RegistrationPage: React.FunctionComponent = () => {
     const {login} = useAuth();
     const message = useMessage();
     const {request} = useHttp();
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         email: "",
         password: "",
@@ -31,12 +40,7 @@ export const RegistrationPage: React.FunctionComponent = () => {
         phone: "",
         address: ""
     })
-    const [errors, setErrors] = useState<IInputError>({
-        email: "",
-        name: "",
-        phone: "",
-        address: ""
-    })
+    const [errors, setErrors] = useState<IInputError>(initialInputError)
     const changeHandler = (e:any) => {
         setForm({
             ...form,
@@ -53,12 +57,14 @@ export const RegistrationPage: React.FunctionComponent = () => {
         try {
             const data = await request(authPageRegisterRequest(), 'POST', {...newForm})
             login(data.token, data.id);
-            message(data.message)
-            document.location.reload();
+            navigate(EUrl.tShirts.url);
+            message("Регистрация прошла успешно!")
         } catch (e) {
             const err = e as IServerError;
             if (err.errors)
                 setErrors(err.errors)
+            else
+                setErrors(initialInputError)
             message(err.message)
         }
 

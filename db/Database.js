@@ -4,7 +4,7 @@ const Importer = require('mysql-import');
 const [host, user, password, database] = ['localhost', 'root', "", 'internet_shop']
 class Database {
     constructor() {
-        if (Database.exists){
+        if (Database.exists) {
             return Database.instance;
         }
     }
@@ -28,7 +28,7 @@ class Database {
             user,
             password
         })
-        await db.query('CREATE DATABASE IF NOT EXISTS clothes')
+        await db.query(`CREATE DATABASE IF NOT EXISTS ${database}`)
         const importer = new Importer({host, user, password, database});
         importer.import(`${database}.sql`).then(()=>{
             const files_imported = importer.getImported();
@@ -225,12 +225,6 @@ class Database {
         })
     }
 
-    // Возврат пользователя по email
-    async getUserByEmailOrNumber(email, phone) {
-        const sql = 'SELECT * FROM users WHERE `e-mail` =' + `'${email}' OR phone_number = ${phone}`
-        // Возвращаем первого пользователя
-        return (await this.query(sql))[0];
-    }
 
     // Возврат пользователя по id
     getUserById(id) {
@@ -265,12 +259,6 @@ class Database {
         })
     }
 
-    // Возвращает id только что созданного пользователя
-    async registerUser(email, name, phone, address, hash, token) {
-        const sql = 'INSERT INTO users (`e-mail`, name, phone_number, address, hash, token)' +
-            ` VALUES ('${email}', '${name}', '${phone}', '${address}', '${hash}', '${token}')`
-        return (await this.query(sql))['insertId'];
-    }
 
     // Поменять токен пользователя на указанный
     setTokenById (id, token) {
@@ -713,4 +701,5 @@ class Database {
 
 }
 
-module.exports = Database;
+
+module.exports = Database

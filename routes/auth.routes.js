@@ -1,11 +1,11 @@
-const {check, validationResult } = require('express-validator')
+const {check, validationResult, oneOf} = require('express-validator')
 const {Router} = require("express");
 const router = Router();
-const DataBase = require('../db/Database')
 const md5 = require("md5")
 const auth = require('../middleware/auth.middleware')
+const UsersDatabase = require('../db/UsersDatabase')
 
-const db = new DataBase()
+const db = new UsersDatabase();
 router.post('/register',
     [
         check('email', 'Некорректный email').isEmail(),
@@ -59,54 +59,41 @@ router.post('/register',
     })
 
 router.post('/login',
-    [
-        check('email', 'Некорректный email').isEmail()
-    ],
+        oneOf(
+            [check('email', 'Некорректный email').isEmail(),
+            check('email', "Некорректные номер телефона").isLength({min: 11, max:11}).isNumeric()]
+        )
+    ,
     async (req, res) =>
     {
         try {
-
             const errors = validationResult(req);
-
             if (!errors.isEmpty()){
                 return res.status(400).json({
                     errors: errors.array(),
                     message: "Некорректные данные при авторизации"
                 })
             }
-
             const {email, hash, rand} = req.body;
-            const candidate = await db.getUserByEmail(email);
-            if (!candidate)
-                return res.status(400).json(
-                    {
-                            message: "Неправильный пароль"
+            const candidate = await db.getUserByEmailOrNumber(email, email);
+            if (candidate) {
+                if (hash === md5(candidate.hash + rand)) {
+                    const token = md5(Date.now().toString() + Math.random()*12323231);
+                    await db.loginUser(email, email, token);
+                    return res.status(200).json ({
+                        id: candidate.id,
+                        token,
+                        name: candidate.name
                     })
-
-            return res.status(500).json({message: "Ошибка при авторизации"})
-                // if (candidate) {
-                //     if (hash === md5(candidate.hash + rand)){
-                //         const token = md5(Date.now().toString() + Math.random()*12323231);
-                //         db.setTokenById(candidate.id, token)
-                //             .then(() => {
-                //                 return res.json({token, id: candidate.id})
-                //             })
-                //             .catch(()=> {
-                //                     return res.status(500).json({message: "Ошибка при авторизации"})
-                //                 }
-                //             )
-                //         return;
-                //     }
-                //     return res.status(400).json({
-                //         message: "Неправильный пароль"
-                //     })
-                //
-                // }
-                // return res.status(400).json ({
-                //     message: "Пользователя с таким email не существует"
-                // })
-
-
+                }
+                return res.status(400).json({
+                            message: "Неправильный пароль"
+                        })
+            }
+            return res.status(400).json(
+                {
+                    message: "Пользователя с таким e-mail или номером телефона не существует"
+                })
         } catch (e){
             console.log(e.message);
             return res.status(500).json({

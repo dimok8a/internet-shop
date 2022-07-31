@@ -1,10 +1,10 @@
 const express = require('express');
 const app = express();
-const DataBase = require('./db/Database')
+const Database = require('./db/Database')
 
 
 async function main() {
-    const db = new DataBase();
+    const db = new Database();
     await db.init();
     app.use(express.json({ extended: true }))
     app.use('/api/img', require('./routes/image.routes'))
