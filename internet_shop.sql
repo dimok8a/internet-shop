@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Июл 30 2022 г., 12:32
+-- Время создания: Авг 03 2022 г., 12:01
 -- Версия сервера: 10.4.22-MariaDB
 -- Версия PHP: 8.1.2
 
@@ -29,10 +29,10 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `cart_items` (
   `id` int(11) NOT NULL,
-  `clothe_id` int(11) DEFAULT NULL,
-  `size_id` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `count` int(11) DEFAULT NULL
+  `clothe_id` int(11) NOT NULL,
+  `size_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `count` int(11) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -56,7 +56,7 @@ CREATE TABLE `clothes` (
 INSERT INTO `clothes` (`id`, `clothe_type_id`, `price`, `name`, `description`) VALUES
 (1, 1, 799, 'Черная футболка', 'Очень стильная футболка'),
 (2, 1, 990, 'Розовая футболка', 'Розовый очень красивый цвет'),
-(3, 1, 850, 'Розовая футболка с треугольником', 'Эргономичный треугольник сделает из вас красавца'),
+(3, 1, 850, 'Розовая футболка c треугольником', 'Эргономичный треугольник сделает из вас красавца'),
 (4, 2, 1290, 'Желтое худи', 'Очень красивое желтое худи'),
 (5, 2, 1500, 'Серое худи', 'Скромное, но при этом изящное серое худи'),
 (6, 2, 1400, 'Бирюзовое худи', 'Очень красивое бирюзовое худи'),
@@ -65,7 +65,9 @@ INSERT INTO `clothes` (`id`, `clothe_type_id`, `price`, `name`, `description`) V
 (9, 3, 1790, 'Бежевые штаны', 'Очень красивые бежевые штаны'),
 (10, 4, 1460, 'Черное поло', 'Очень стильное черное поло'),
 (11, 4, 1300, 'Голубое поло', 'Скромное, но при этом изящное голубое поло'),
-(12, 4, 1700, 'Белое поло', 'Очень красивое белое поло');
+(12, 4, 1700, 'Белое поло', 'Очень красивое белое поло'),
+(13, 1, 123, '123', '123'),
+(14, 1, 321, '321', '312');
 
 -- --------------------------------------------------------
 
@@ -101,7 +103,7 @@ CREATE TABLE `delivery_items` (
   `size_id` int(11) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
   `count` int(11) DEFAULT NULL,
-  `status_id` int(11) DEFAULT NULL
+  `status_id` int(11) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -206,6 +208,17 @@ CREATE TABLE `statuses` (
   `name` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Дамп данных таблицы `statuses`
+--
+
+INSERT INTO `statuses` (`id`, `name`) VALUES
+(1, 'Принят в обработку'),
+(2, 'Доставляется'),
+(3, 'Доставлен'),
+(4, 'Отменен'),
+(5, 'Ошибка');
+
 -- --------------------------------------------------------
 
 --
@@ -217,17 +230,10 @@ CREATE TABLE `users` (
   `name` varchar(32) NOT NULL,
   `phone_number` varchar(20) NOT NULL,
   `e-mail` varchar(50) NOT NULL,
-  `hash` varchar(32) NOT NULL,
+  `hash` varchar(50) NOT NULL,
   `address` varchar(100) NOT NULL,
   `token` varchar(32) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Дамп данных таблицы `users`
---
-
-INSERT INTO `users` (`id`, `name`, `phone_number`, `e-mail`, `hash`, `address`, `token`) VALUES
-(8, 'Админ', '89635466743', 'admin@mail.ru', '1a78daed80eeba1cade7c75d0f5c1cda', 'Ижевск, Кунгурцева, 123', 'f837b134b5c10df390ca5cb6cd3b0858');
 
 --
 -- Индексы сохранённых таблиц
@@ -306,13 +312,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT для таблицы `clothes`
 --
 ALTER TABLE `clothes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT для таблицы `clothe_types`
@@ -324,13 +330,13 @@ ALTER TABLE `clothe_types`
 -- AUTO_INCREMENT для таблицы `delivery_items`
 --
 ALTER TABLE `delivery_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT для таблицы `images`
 --
 ALTER TABLE `images`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT для таблицы `sizes`
@@ -348,13 +354,13 @@ ALTER TABLE `sizes_counts`
 -- AUTO_INCREMENT для таблицы `statuses`
 --
 ALTER TABLE `statuses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
