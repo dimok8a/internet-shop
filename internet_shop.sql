@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Авг 03 2022 г., 12:01
+-- Время создания: Авг 03 2022 г., 15:56
 -- Версия сервера: 10.4.22-MariaDB
 -- Версия PHP: 8.1.2
 
@@ -106,6 +106,18 @@ CREATE TABLE `delivery_items` (
   `status_id` int(11) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Триггеры `delivery_items`
+--
+DELIMITER $$
+CREATE TRIGGER `change_count` AFTER INSERT ON `delivery_items` FOR EACH ROW UPDATE sizes_counts SET sizes_counts.count = sizes_counts.count - new.count WHERE sizes_counts.clothe_id = new.clothe_id AND sizes_counts.size_id = new.size_id
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `return_clothes` AFTER UPDATE ON `delivery_items` FOR EACH ROW UPDATE sizes_counts SET sizes_counts.count = sizes_counts.count + new.count WHERE sizes_counts.clothe_id = new.clothe_id AND sizes_counts.size_id = new.size_id AND new.status_id > 3
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -182,10 +194,8 @@ CREATE TABLE `sizes_counts` (
 --
 
 INSERT INTO `sizes_counts` (`id`, `size_id`, `clothe_id`, `count`) VALUES
-(1, 4, 1, 10),
-(2, 3, 1, 15),
-(3, 5, 1, 31),
-(4, 3, 2, 14),
+(3, 5, 1, 30),
+(4, 3, 2, 13),
 (5, 1, 3, 54),
 (6, 6, 4, 66),
 (7, 5, 5, 61),
@@ -195,7 +205,8 @@ INSERT INTO `sizes_counts` (`id`, `size_id`, `clothe_id`, `count`) VALUES
 (11, 3, 9, 11),
 (12, 1, 10, 12),
 (13, 4, 11, 32),
-(14, 3, 12, 21);
+(14, 3, 12, 21),
+(15, 4, 1, 22);
 
 -- --------------------------------------------------------
 
@@ -312,7 +323,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT для таблицы `clothes`
@@ -330,7 +341,7 @@ ALTER TABLE `clothe_types`
 -- AUTO_INCREMENT для таблицы `delivery_items`
 --
 ALTER TABLE `delivery_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT для таблицы `images`
@@ -348,7 +359,7 @@ ALTER TABLE `sizes`
 -- AUTO_INCREMENT для таблицы `sizes_counts`
 --
 ALTER TABLE `sizes_counts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT для таблицы `statuses`
@@ -360,7 +371,7 @@ ALTER TABLE `statuses`
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
