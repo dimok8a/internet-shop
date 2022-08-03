@@ -109,14 +109,8 @@ CREATE TABLE `delivery_items` (
 --
 -- Триггеры `delivery_items`
 --
-DELIMITER $$
-CREATE TRIGGER `change_count` AFTER INSERT ON `delivery_items` FOR EACH ROW UPDATE sizes_counts SET sizes_counts.count = sizes_counts.count - new.count WHERE sizes_counts.clothe_id = new.clothe_id AND sizes_counts.size_id = new.size_id
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `return_clothes` AFTER UPDATE ON `delivery_items` FOR EACH ROW UPDATE sizes_counts SET sizes_counts.count = sizes_counts.count + new.count WHERE sizes_counts.clothe_id = new.clothe_id AND sizes_counts.size_id = new.size_id AND new.status_id > 3
-$$
-DELIMITER ;
+CREATE TRIGGER `change_count` AFTER INSERT ON `delivery_items` FOR EACH ROW UPDATE sizes_counts SET sizes_counts.count = sizes_counts.count - new.count WHERE sizes_counts.clothe_id = new.clothe_id AND sizes_counts.size_id = new.size_id;
+CREATE TRIGGER `return_clothes` AFTER UPDATE ON `delivery_items` FOR EACH ROW UPDATE sizes_counts SET sizes_counts.count = sizes_counts.count + new.count WHERE sizes_counts.clothe_id = new.clothe_id AND sizes_counts.size_id = new.size_id AND new.status_id > 3;
 
 -- --------------------------------------------------------
 
