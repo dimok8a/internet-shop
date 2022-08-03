@@ -37,7 +37,7 @@ export interface IClotheCart {
 export interface IClotheDelivery {
     id:number,
     name:string,
-    size_name: string,
+    size: string,
     count: number,
     price: number,
     image: string,

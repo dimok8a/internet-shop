@@ -50,7 +50,7 @@ export const useAuth = () => {
             login(data.token, data.id);
         }
         setWaitingChanges(false);
-    }, [])
+    }, [login])
 
     return { login, logout, token, userId, checkData, waitingChanges, waitingVerification }
 

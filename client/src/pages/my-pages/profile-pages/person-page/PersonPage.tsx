@@ -15,6 +15,7 @@ import {
 } from "../../../../requests/profile-requests/person-page-requests/person-page-exit-request";
 import {EUrl} from "../../../../enums";
 import {useNavigate} from "react-router-dom";
+import {Loading} from "../../../../components/loading/Loading";
 
 
 let defaultValues = {
@@ -33,29 +34,27 @@ export const PersonPage: React.FunctionComponent = () => {
 
     const [disableFlag, setDisableFlag] = useState(true);
     const [isDataValid, setDataValid] = useState(true)
-
-    const {request} = useHttp();
+    const [isLoading, setLoading] = useState(false);
+    const {request, loading} = useHttp();
     const message = useMessage();
-    const {token, userId} = useContext(AuthContext);
-    const {logout} = useAuth();
+    const {token, userId, logout} = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(()=> {
         const getRequest  = async () => {
+            setLoading(true);
             try {
-                return await request(personPageGetRequest(), 'GET', null, getHeader(userId!, token!))
+                const result = await request(personPageGetRequest(), 'GET', null, getHeader(userId!, token!))
+                name.setValue(result.name);
+                email.setValue(result['e-mail']);
+                address.setValue(result.address);
+                setPhone(result.phone_number);
+                defaultValues = result;
             } catch (e) {
-                document.location.reload();
                 message((e as Error).message);
             }
         }
-        getRequest().then(result => {
-            name.setValue(result.name || "");
-            email.setValue(result['e-mail'] || "");
-            address.setValue(result.address || "");
-            setPhone(result.phone_number || "");
-            defaultValues = result;
-        })
+        getRequest().then(()=>setLoading(false));
     }, [])
 
     function changeBtnHandler () {
@@ -85,7 +84,7 @@ export const PersonPage: React.FunctionComponent = () => {
         setDisableFlag(true);
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         if (email.isValid && name.isValid && address.isValid)
             setDataValid(true);
         else
@@ -106,6 +105,9 @@ export const PersonPage: React.FunctionComponent = () => {
         }
     }
 
+    if (isLoading) {
+        return <Loading/>
+    }
     return (
         <div className="person_container container">
             <h2 className="center">Мои данные</h2>

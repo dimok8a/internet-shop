@@ -15,7 +15,7 @@ export const DeliveryItem: React.FunctionComponent<{deliveryItem: IClotheDeliver
                 </div>
                 <div className="delivery_data">
                     <div className="delivery_name">{deliveryItem.name}</div>
-                    <div className="delivery_details">{deliveryItem.size_name}</div>
+                    <div className="delivery_details">{deliveryItem.size}</div>
                 </div>
             </div>
             <div className="delivery_count">

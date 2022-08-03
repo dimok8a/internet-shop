@@ -1,7 +1,6 @@
 import React, {useCallback, useContext, useEffect, useState} from "react"
 import {CartItem} from "../../../components/CartItem";
 import {useHttp} from "../../../hooks/http.hook";
-import {useAuth} from "../../../hooks/auth.hook";
 import {AuthContext} from "../../../context/AuthContext";
 import {Loading} from "../../../components/loading/Loading";
 import {EmptyCart} from "../empty-cart-page/EmptyCart";
@@ -16,6 +15,7 @@ import {
 } from "../../../requests/cart-requests/cart-page-delivery-add-request";
 import {cartPageDeleteRequest} from "../../../requests/cart-requests/cart-page-delete-request";
 import {Loader} from "../../../components/loader/Loader";
+import {IClotheCart} from "../../../interfaces";
 
 
 export const CartPage:React.FunctionComponent = () => {
@@ -28,15 +28,7 @@ export const CartPage:React.FunctionComponent = () => {
     const [loadingId, setLoadingId] = useState(0);
 
 
-    const [cartItems, setCartItems] = useState([{
-        id: 0,
-        price: 0,
-        name: "",
-        image: "",
-        size: "",
-        count: 0,
-        max_count: 0
-    }]);
+    const [cartItems, setCartItems] = useState<IClotheCart[]>([]);
 
 
 

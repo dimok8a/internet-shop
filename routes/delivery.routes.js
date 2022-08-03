@@ -8,7 +8,7 @@ router.get('/', auth, async (req, res)=> {
     try {
         const result = await db.getUserDeliveryItems(req.user.id);
         result.forEach(item => item.price *= item.count)
-        return res.status(200).json(result);
+        return res.status(200).json(result.reverse());
     } catch (e) {
         console.log(e);
         return res.status(500).json({

@@ -1,12 +1,12 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {
     authPageRegisterRequest
 } from "../../../../requests/profile-requests/auth-page-requests/auth-page-register-request";
 import {Link, useNavigate} from "react-router-dom";
-import {useAuth} from "../../../../hooks/auth.hook";
 import {useMessage} from "../../../../hooks/message.hook";
 import {useHttp} from "../../../../hooks/http.hook";
 import {EUrl} from "../../../../enums";
+import {AuthContext} from "../../../../context/AuthContext";
 const md5 = require("md5");
 
 interface IInputError {
@@ -29,7 +29,7 @@ const initialInputError = {
 }
 
 export const RegistrationPage: React.FunctionComponent = () => {
-    const {login} = useAuth();
+    const {userId, token, login, logout} = useContext(AuthContext);
     const message = useMessage();
     const {request} = useHttp();
     const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {useHttp} from "../../hooks/http.hook";
 import {ErrorPage} from "../error-page/ErrorPage";
 import {Loading} from "../../components/loading/Loading";
@@ -86,12 +86,14 @@ export const ItemPage: React.FunctionComponent = () => {
                 )
                 // Задаем размеры, которые уже лежат в корзине
                 if (token && userId) {
+                    console.log(token, userId);
                     const sizes = await request(cartRequest(params['*']?.split("/")[1]), 'GET', null, getHeader(userId!, token!));
                     if (sizes)
                         setSizesInCart(sizes);
                 }
             }
         } catch(e) {
+            console.log(e);
                 setError(true);
             }
         finally {
@@ -133,7 +135,7 @@ export const ItemPage: React.FunctionComponent = () => {
                     </select>
                     <div className="item_availability">В наличии: {selectSize.count} шт.</div>
                     {!!token &&
-                    sizesInCart.includes(selectSize.id) ?
+                    (sizesInCart.includes(selectSize.id) ?
                         <button
                             className="btn item_btn"
                             disabled
@@ -147,10 +149,10 @@ export const ItemPage: React.FunctionComponent = () => {
                             onClick={() => addItem()}
                         >
                             Добавить в корзину
-                        </button>
+                        </button>)
                     }
                     {!token &&
-                        <a href={EUrl.my.url}>Чтобы добавить в корзину, войдите или зарегистрируйтесь</a>
+                        <Link to={EUrl.my.url}>Чтобы добавить в корзину, войдите или зарегистрируйтесь</Link>
                     }
                 </div>
             </div>

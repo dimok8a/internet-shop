@@ -77,6 +77,8 @@ class ClothesDatabase extends Database {
         delete result.size_id
         delete result.size_count
         result.images = result.images.split(', ');
+        result.sizes = result.sizes.filter(size => parseInt(size.count) > 0);
+        result.sizes.sort((size1, size2) => size1.id - size2.id)
         return result
     }
 }

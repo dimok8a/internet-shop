@@ -19,11 +19,11 @@ function App() {
         changeTitle(path);
     }, [path])
 
-    const { token, userId, waitingChanges, waitingVerification } = useAuth();
+    const { token, userId, login, logout } = useAuth();
 
     return (
       <BrowserRouter>
-          <AuthContext.Provider value={{token, userId}}>
+          <AuthContext.Provider value={{token, userId, login, logout}}>
               <Routes>
                   <Route element={<MainPage/>} path={EUrl.main.url}/>
                   <Route element={<AdminPage/>} path="/admin/*"/>

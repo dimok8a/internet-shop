@@ -10,6 +10,7 @@ import {AuthPage} from "../profile-pages/auth-page/AuthPage";
 import {deliveryPageGetRequest} from "../../../requests/delivery-requests/delivery-page-get-request";
 import {getHeader} from "../../../methods/getHeader";
 import {deliveryPageCancelRequest} from "../../../requests/delivery-requests/delivery-page-cancel-request";
+import {IClotheDelivery} from "../../../interfaces";
 
 export const DeliveryPage:React.FunctionComponent = () => {
     const { token, userId } = useContext(AuthContext);
@@ -17,15 +18,7 @@ export const DeliveryPage:React.FunctionComponent = () => {
     const {request, loading} = useHttp();
     const [itemsWasUpdated, setItemsWasUpdated] = useState(false);
 
-    const [deliveryItems, setDeliveryItems] = useState([{
-        id: 0,
-        price: 0,
-        name: "",
-        image: "",
-        size_name: "",
-        count: 0,
-        status: ""
-    }]);
+    const [deliveryItems, setDeliveryItems] = useState<IClotheDelivery[]>([]);
 
     // Обновление вещей в доставке пользователя
     const updateDeliveryItems = async() => {
