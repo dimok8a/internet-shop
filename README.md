@@ -6,7 +6,7 @@ To install this project you have to write this in your terminal
 ### `npm install`
 ### `cd ./client`
 ### `npm install`
-Then you have to import clothes.sql on your MySQL server
+Then you have start your MySQL server (for example `XAMPP`)
 
 # Start
 To start this project you have to write this commands in your terminal
