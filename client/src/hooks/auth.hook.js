@@ -1,17 +1,18 @@
 import {useCallback, useEffect, useState} from "react";
 import {useHttp} from "./http.hook";
+import {getHeader} from "../methods/getHeader";
 const storageName = "userData"
 
 export const useAuth = () => {
     const [token, setToken] = useState(null);
     const [userId, setUserId] = useState(null);
     const [waitingChanges, setWaitingChanges] = useState(false);
-    const [waitingVerification, setWaitingVerification] = useState(false);
+    const [waitingVerification, setWaitingVerification] = useState(true);
     const {request} = useHttp();
 
     const login = useCallback((userToken, userId)=>{
-        setToken(()=> userToken);
-        setUserId(()=> userId);
+        setToken(userToken);
+        setUserId(userId);
         localStorage.setItem(storageName, JSON.stringify({
             token: userToken,
             id: userId
@@ -26,19 +27,20 @@ export const useAuth = () => {
     }, [])
 
     const checkData = async () => {
-        setWaitingVerification(true);
         const data = JSON.parse(localStorage.getItem(storageName));
-        try {
-            await request('/api/auth/exists', 'POST', {
-                token: data.token,
-                id: data.id
-            })
-            login(data.token, data.id);
-        } catch (e) {
+        if (data) {
+            setWaitingVerification(true);
+            try {
+                await request('/api/auth/exists', 'POST', null, getHeader(data.id, data.token))
+            } catch (e) {
+                logout();
+            } finally {
+                setWaitingVerification(false);
+            }
+        } else {
             logout();
-        } finally {
-            setWaitingVerification(false);
         }
+
     }
 
     useEffect(()=> {

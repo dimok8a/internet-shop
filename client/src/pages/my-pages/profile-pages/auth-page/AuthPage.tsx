@@ -15,7 +15,7 @@ export const AuthPage: React.FunctionComponent = () => {
     const message = useMessage();
     const navigate = useNavigate();
     const [form, setForm] = useState({
-        email: "",
+        phone: "",
         password: ""
     })
 
@@ -29,8 +29,8 @@ export const AuthPage: React.FunctionComponent = () => {
     const loginHandler = async () => {
         const randNum = Math.floor(Math.random()*10000).toString();
         const newForm = {
-            email: form.email,
-            hash: md5(md5(form.email+form.password)+randNum),
+            phone: form.phone,
+            hash: md5(md5(form.phone+form.password)+randNum),
             rand: randNum
         }
         try {
@@ -64,11 +64,11 @@ export const AuthPage: React.FunctionComponent = () => {
                                  onFocus={onFocusHandler}
                                  onBlur={onBlurHandler}
                             >
-                                <span>E-mail или номер телефона</span>
+                                <span>Номер телефона (через 8)</span>
                                 <input
-                                    type="email"
+                                    type="tel"
                                     id="log"
-                                    name="email"
+                                    name="phone"
                                     onChange={changeHandler}
                                 />
                             </div>
@@ -84,7 +84,6 @@ export const AuthPage: React.FunctionComponent = () => {
                                     onChange={changeHandler}
                                 />
                             </div>
-
                             <button
                                 id="btnLogin"
                                 onClick={loginHandler}

@@ -3,7 +3,7 @@ const Database = require('./Database')
 class UsersDatabase extends Database {
     constructor() {
         super();
-        Object.setPrototypeOf(this, UsersDatabase.prototype); // <-------
+        this.db = super.getInstance();
     }
     // Возврат пользователя по email
     async getUserByEmailOrNumber(email, phone) {
@@ -18,9 +18,40 @@ class UsersDatabase extends Database {
         return (await super.query(sql))['insertId'];
     }
 
-    async loginUser(email, phone, token) {
-        const sql = `UPDATE users SET token = '${token}'`  + 'WHERE `e-mail` =' + `'${email}' OR phone_number = '${phone}'`
+    // Set token to user by email or phone
+    async loginUser(phone, token) {
+        const sql = `UPDATE users SET token = '${token}'`  + `WHERE phone_number = '${phone}'`
         return (await super.query(sql));
+    }
+
+    async getUserById(id) {
+        const sql = `SELECT * FROM users WHERE id = ${id}`
+        return (await super.query(sql))[0];
+    }
+
+    async getUserByEmail(email) {
+        const sql = 'SELECT * FROM users WHERE `e-mail` =' + `'${email}'`
+        return (await super.query(sql))[0];
+    }
+
+    async getUserByPhone(phone) {
+        const sql = `SELECT * FROM users WHERE phone_number = '${phone}'`
+        return (await super.query(sql))[0];
+    }
+
+    // change user info (name, e-mail, address)
+    async changeUserData(id, newName, newEmail, newAddress) {
+        const sql = `UPDATE users SET 
+                    name = '${newName}', 
+                    address = '${newAddress}',` +
+                    ' `e-mail`' + ` = '${newEmail}' 
+                    WHERE id = ${id}`;
+        return (await super.query(sql))[0];
+    }
+
+    async userExit(id) {
+        const sql = `UPDATE users SET token = NULL WHERE id = ${id}`
+        return (await super.query(sql))[0];
     }
 
 }

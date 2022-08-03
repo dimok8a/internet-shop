@@ -15,24 +15,25 @@ import {
     cartPageDeliveryAddRequest
 } from "../../../requests/cart-requests/cart-page-delivery-add-request";
 import {cartPageDeleteRequest} from "../../../requests/cart-requests/cart-page-delete-request";
+import {Loader} from "../../../components/loader/Loader";
 
 
 export const CartPage:React.FunctionComponent = () => {
 
-    const [cartLoading, setCartLoading] = useState(true);
     const [itemsWasUpdated, setItemsWasUpdated] = useState(false);
     const [totalPrice, setTotalPrice] = useState(0);
     const {request, loading} = useHttp();
     const { token, userId } = useContext(AuthContext);
     const message = useMessage();
+    const [loadingId, setLoadingId] = useState(0);
 
 
     const [cartItems, setCartItems] = useState([{
         id: 0,
         price: 0,
         name: "",
-        images: "[]",
-        size_name: "",
+        image: "",
+        size: "",
         count: 0,
         max_count: 0
     }]);
@@ -44,9 +45,9 @@ export const CartPage:React.FunctionComponent = () => {
 
     // Обновление вещей в корзине пользователя
     const updateCartItems = () => {
+        setItemsWasUpdated(false)
         if (token && userId) {
             const getCartItems = async () => {
-                setCartLoading(true);
                 try {
                     return await request(cartPageGetRequest(), 'GET', null, getHeader(userId, token))
                 } catch (e) {
@@ -58,7 +59,6 @@ export const CartPage:React.FunctionComponent = () => {
                     setCartItems(() => result)
                 })
                 .finally(()=> {
-                    setCartLoading(false);
                     setItemsWasUpdated(true);
                 });
         }
@@ -68,38 +68,14 @@ export const CartPage:React.FunctionComponent = () => {
     }, [token, userId])
 
 
-    // Увеличение количества выбранных вещей
-    function changePrices(itemId:number, count:number){
-        changeCountRequest(itemId, count)
-            .then(result => {
-                if (result)
-                    setCartItems((prev) => prev.map(item => {
-                        const newItem = {...item};
-                        if (item.id === itemId)
-                            newItem.price = result.newPrice;
-                        return newItem;
-                    }))
-            })
-            .catch(e => console.log(e));
-    }
-
-    async function changeCountRequest(itemId:number, count:number){
-        try {
-            return await request(cartPageSetCountRequest(), 'POST', {itemId, count}, getHeader(userId!, token!))
-        } catch (e) {
-            message(e);
-        }
-    }
-
     async function removeItem (itemId:number) {
         try {
             await request(cartPageDeleteRequest(), 'POST', {itemId}, getHeader(userId!, token!))
-                .then(()=>{
-                    updateCartItems();
-                })
+            updateCartItems();
+            message("Вещь успешно удалена из корзины")
         } catch (e) {
             console.log(e);
-            message(e);
+            message((e as Error).message);
         }
     }
 
@@ -111,71 +87,29 @@ export const CartPage:React.FunctionComponent = () => {
         setTotalPrice(()=> itemsPrice);
     }, [cartItems])
 
-    const addDeliveryHandler = () => {
-        const addDelivery = async () => {
+    const addDeliveryHandler = async() => {
+        const confirmation = window.confirm("Вы уверены, что хотите сделать заказ?")
+        if (confirmation) {
             try {
                 await request(cartPageDeliveryAddRequest(), 'POST', null, getHeader(userId!, token!))
-                    .then(()=>{
-                        updateCartItems();
-                    })
+                updateCartItems();
+                message("Заказ создан успешно")
             }
             catch (e) {
-                message(e);
+                message((e as Error).message);
             }
         }
-
-        const confirmation = window.confirm("Вы уверены, что хотите сделать заказ?")
-        if (confirmation)
-            addDelivery()
-                .then(() => message("Заказ сделан успешно"))
     }
 
-    const changeCountHandler = (operation:string, id:number, newCount:number = 0) => {
-        if (operation === "add") {
-            setCartItems(prev => prev.map(item => {
-                const newItem = {...item};
-                if (item.id === id) {
-                    if (item.max_count >= item.count + 1) {
-                        newItem.count = item.count + 1;
-                        setIdsError((prev)=>prev.filter(ids => ids != item.id));
-                        changePrices(item.id, newItem.count);
-                    }
-                    else
-                        setIdsError((prev)=>[...prev, item.id]);
-                }
-                return newItem;
-            }));
-        }
-        if (operation === "sub") {
-            setCartItems(prev => prev.map(item => {
-                const newItem = {...item};
-                if (item.id === id) {
-                    if (item.count > 1 ) {
-                        newItem.count = item.count - 1;
-                        setIdsError((prev)=>prev.filter(ids => ids != item.id));
-                        changePrices(item.id, newItem.count)
-                    }
-                    else
-                        setIdsError((prev)=>[...prev, item.id]);
-                }
-                return newItem;
-            }));
-        }
-        if (operation === "input") {
-            setCartItems(prev => prev.map(item => {
-                const newItem = {...item};
-                if (item.id === id) {
-                    if (item.max_count >= newCount) {
-                        newItem.count = newCount;
-                        setIdsError((prev)=>prev.filter(ids => ids != item.id));
-                        changePrices(item.id, newItem.count)
-                    }
-                    else
-                        setIdsError((prev)=>[...prev, item.id]);
-                }
-                return newItem;
-            }));
-        }
+
+
+    const changeCountHandler = async (id:number, newCount:number = 0) => {
+        setLoadingId(id);
+        const result = await request(cartPageSetCountRequest(), 'POST', {id, newCount}, getHeader(userId!, token!))
+        setCartItems(prev => prev.map(item => {
+            return {...item, price: item.id === result.id ? result.price : item.price, count: item.id === result.id ? result.count : item.count}
+        }))
+        setLoadingId(0);
     }
 
     if (!token)
@@ -199,13 +133,16 @@ export const CartPage:React.FunctionComponent = () => {
                                         changeCountHandler={changeCountHandler}
                                         removeItem={removeItem}
                                         idsError={idsError}
+                                        loadingId={loadingId}
                                     />)
                         }
                     </div>
                     <div className="cart_total">
                         <div className="total_title_price_container">
                             <div className="total_title">Итого</div>
-                            <div className="total_price">{totalPrice} RUB</div>
+                            {loading ? <Loader/>
+                            : <div className="total_price">{totalPrice} RUB</div>
+                            }
                         </div>
                         <div className="total_btn">
                             <button onClick={addDeliveryHandler} className="btn">Заказать</button>

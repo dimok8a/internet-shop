@@ -1,5 +1,4 @@
 import React, {useContext, useEffect, useState} from "react";
-import {CartItem} from "../../../components/CartItem";
 import {DeliveryItem} from "../../../components/DeliveryItem";
 import {AuthContext} from "../../../context/AuthContext";
 import {useMessage} from "../../../hooks/message.hook";
@@ -29,35 +28,26 @@ export const DeliveryPage:React.FunctionComponent = () => {
     }]);
 
     // Обновление вещей в доставке пользователя
-    const updateDeliveryItems = () => {
+    const updateDeliveryItems = async() => {
         if (token && userId) {
             setItemsWasUpdated(false);
-            const getCartItems = async () => {
-                try {
-                    return await request(deliveryPageGetRequest(), 'GET', null, getHeader(userId, token))
-                } catch (e) {
-                    message(e);
-                }
+            try {
+                const deliveryItems = await request(deliveryPageGetRequest(), 'GET', null, getHeader(userId, token))
+                setDeliveryItems(deliveryItems)
+            } catch (e) {
+                message((e as Error).message);
+            } finally {
+                setItemsWasUpdated(true);
             }
-            getCartItems()
-                .then(result => {
-                    setDeliveryItems(() => result)
-                })
-                .finally(()=>setItemsWasUpdated(true))
         }
     }
 
-    const cancelDeliveryHandler = (itemId: number) => {
-        const cancelDelivery = async () => {
-            try {
-                return await request(deliveryPageCancelRequest(), 'POST', {itemId}, getHeader(userId!, token!))
-            } catch (e) {
-                message(e);
-            }
-        }
+    const cancelDeliveryHandler = async (itemId: number) => {
         const confirmation = window.confirm("Вы уверены, что хотите отменить заказ?")
         if (confirmation) {
-            cancelDelivery().finally(()=>document.location.reload())
+            await request(deliveryPageCancelRequest(), 'POST', {itemId}, getHeader(userId!, token!));
+            await updateDeliveryItems();
+            message("Заказ успешно отменен")
         }
     }
 

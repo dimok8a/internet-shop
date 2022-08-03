@@ -1,6 +1,7 @@
 import React from "react";
 import {IClotheDelivery} from "../interfaces";
 import {EDeliveryStatusColor} from "../enums";
+import {processStatuses} from "../constants/statuses";
 
 export const DeliveryItem: React.FunctionComponent<{deliveryItem: IClotheDelivery, cancelDeliveryHandler: any}> = (props) => {
     const {deliveryItem, cancelDeliveryHandler} = {...props}
@@ -23,7 +24,7 @@ export const DeliveryItem: React.FunctionComponent<{deliveryItem: IClotheDeliver
             <div className="delivery_price">{deliveryItem.price} RUB</div>
             <div className="delivery_right">
                 <div className="delivery_status" style={{color: statusColor}}>{deliveryItem.status}</div>
-                {deliveryItem.status === "Доставляется" && <button className="delivery_btn" onClick={()=>cancelDeliveryHandler(deliveryItem.id)}>Отменить</button>}
+                {processStatuses.includes(deliveryItem.status) && <button className="delivery_btn" onClick={()=>cancelDeliveryHandler(deliveryItem.id)}>Отменить</button>}
             </div>
 
         </div>

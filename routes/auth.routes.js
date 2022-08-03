@@ -19,6 +19,7 @@ router.post('/register',
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()){
+                // error messages to {error : msg}
                 let mapErrors = errors.mapped();
                 for (let mapErrorsKey in mapErrors) {
                     mapErrors[mapErrorsKey] = mapErrors[mapErrorsKey].msg
@@ -59,10 +60,9 @@ router.post('/register',
     })
 
 router.post('/login',
-        oneOf(
-            [check('email', 'Некорректный email').isEmail(),
-            check('email', "Некорректные номер телефона").isLength({min: 11, max:11}).isNumeric()]
-        )
+        [
+            check('phone', 'Некорректный номер телефона').isLength({min: 11, max:11}).isNumeric()
+        ]
     ,
     async (req, res) =>
     {
@@ -74,12 +74,12 @@ router.post('/login',
                     message: "Некорректные данные при авторизации"
                 })
             }
-            const {email, hash, rand} = req.body;
-            const candidate = await db.getUserByEmailOrNumber(email, email);
+            const {phone, hash, rand} = req.body;
+            const candidate = await db.getUserByPhone(phone);
             if (candidate) {
                 if (hash === md5(candidate.hash + rand)) {
                     const token = md5(Date.now().toString() + Math.random()*12323231);
-                    await db.loginUser(email, email, token);
+                    await db.loginUser(phone, token);
                     return res.status(200).json ({
                         id: candidate.id,
                         token,
@@ -105,53 +105,37 @@ router.post('/login',
 
 // Существует ли юзер с переданным id и токеном
 router.post('/exists',
-    [],
-    (req, res)=>{
-    try {
-
-        const {id, token} = req.body;
-
-        db.doesUserExists(id, token)
-            .then((user)=> user ?
-                res.status(200).json({message: "OK"}) :
-                res.status(400).json({message: "Пользователь не найден"}))
-            .catch(e => res.status(400).json({message: "Пользователь не найден"}))
-    } catch (e) {
-        console.log(e.message);
-        return res.status(500).json({
-            message: "Что-то пошло не так, попробуйте снова"
-        })
+    auth,
+    async (req, res) => {
+        return res.status(200).json({message: "Ok"})
     }
-    })
+)
 
 router.post('/change',
     [
         check('email', 'Некорректный email').isEmail(),
-        check('email', "Пустой email").exists()
+        check('name', 'Некорректное имя').exists(),
+        check('name', 'Некорректное имя').isLength({min: 3}),
+        check('address', 'Некорректный адресс').isLength({min: 5}),
     ],
     auth,
-    (req, res) =>
+    async (req, res) =>
     {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()){
                 return res.status(400).json({
                     errors: errors.array(),
-                    message: "Некорректные данные при регистрации"
+                    message: "Некорректные данные"
                 })
             }
-
-            const {name, email, phone, address} = req.body;
-            db.getUserByEmail(req.user.email).then(newUser => {
-                if (newUser && newUser.id !== req.user.id) return res.status(400).json({message: "Такой пользователь уже существует"})
-                db.changeUserDataById(req.user.id, name, email, phone, address)
-                    .then(()=>res.status(200).json({message: "Данные обновлены успешно"}))
-                    .catch(()=> res.status(500).json({message: "Что-то пошло не так, попробуйте снова"}))
-            })
-            .catch(()=>res.status(400).json({message: "Пользователь не найден"}))
-
-        } catch (e){
-            console.log(e.message);
+            const {name, email, address} = req.body;
+            const userByEmail = await db.getUserByEmail(email);
+            if (userByEmail && userByEmail.id !== req.user.id) return res.status(400).json({message: "Пользователь с таким e-mail уже существует"})
+            await db.changeUserData(req.user.id, name, email, address);
+            return res.status(200).json({message: "Ok"})
+        } catch (e) {
+            console.log(e);
             res.status(500).json({
                 message: "Что-то пошло не так, попробуйте снова"
             })
@@ -161,6 +145,7 @@ router.post('/change',
 router.get('/userData', auth, async (req, res) => {
     try {
         if (req.user) {
+            delete req.user.hash
             return res.json(req.user);
         }
         return res.status(400).json({
@@ -173,5 +158,21 @@ router.get('/userData', auth, async (req, res) => {
     }
 })
 
+router.post('/exit', auth, async (req, res) => {
+    try {
+        if (req.user) {
+            await db.userExit(req.user.id);
+            return res.status(200).json({message: "Ok"})
+        }
+        return res.status(400).json({
+            message: "Пользователь не найден"
+        })
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({
+            message: "Что-то пошло не так, попробуйте снова"
+        })
+    }
+})
 
 module.exports = router;

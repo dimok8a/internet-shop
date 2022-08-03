@@ -1,8 +1,8 @@
 
 .clothes_list{
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   justify-content: center;
+  grid-template-areas: "A B C";
   margin-top: 30px;
   padding: 0;
   border: 0;
@@ -10,7 +10,7 @@
     border-radius: 10px;
     margin-top: 20px;
     height: 310px;
-    overflow: hidden;
+    //overflow: hidden;
   }
 }
 
@@ -30,7 +30,6 @@
 .clothe_card_cover{
   flex-direction: column;
   position: relative;
-  overflow: hidden;
   contain: strict;
   display: flex;
   justify-content: center;
@@ -43,6 +42,8 @@
   .card-name,
   .card-price{
     color: black;
+    max-width: 70%;
+    text-align: center;
   }
   .card-name{
     font-size: 1.1rem;

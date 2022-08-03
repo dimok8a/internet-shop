@@ -1,32 +1,25 @@
-const Database = require("../db/Database");
+const UsersDatabase = require('../db/UsersDatabase')
 
-const db = new Database();
+const db = new UsersDatabase();
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
     if (req.method === "OPTIONS") {
         return next();
     }
-
     try {
-
         const id = req.headers.authorization.split(" ")[1];
         const token = req.headers.authorization.split(" ")[2];
 
         if (!id || !token){
             return res.status(401).json({message: "Пользователь не авторизован"})
         }
-        db.doesUserExists(id, token)
-            .then(user => {
-                if (user) {
-                    req.user = user;
-                    return next();
-                }
-        })
-            .catch(e => {
-                return res.status(500).json({message: "Произошла ошибка. Повторите позднее"})
-            })
-
+        const user = await db.getUserById(id);
+        if (user.token === token) {
+            req.user = user;
+            return next();
+        }
+        return res.status(401).json({message: "Пользователь не авторизован"})
     } catch (e) {
-        return res.status(500).json({message: "Пользователь не авторизован"})
+        return res.status(500).json({message: "Произошла ошибка. Повторите позднее"})
     }
 }

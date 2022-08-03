@@ -8,6 +8,8 @@ import {MyPage} from "./pages/my-pages/my-page/MyPage";
 import {useAuth} from "./hooks/auth.hook";
 import {AuthContext} from "./context/AuthContext";
 import {usePath} from "./hooks/path.hook";
+import {ErrorPage} from "./pages/error-page/ErrorPage";
+import {Loading} from "./components/loading/Loading";
 
 function App() {
 
@@ -25,7 +27,7 @@ function App() {
               <Routes>
                   <Route element={<MainPage/>} path={EUrl.main.url}/>
                   <Route element={<AdminPage/>} path="/admin/*"/>
-                </Routes>
+              </Routes>
           </AuthContext.Provider>
       </BrowserRouter>
   );

@@ -12,6 +12,8 @@ async function main() {
     app.use('/api/auth', require('./routes/auth.routes'))
     app.use('/api/cart', require('./routes/cart.routes'))
     app.use('/api/delivery', require('./routes/delivery.routes'))
+
+
 }
 
 

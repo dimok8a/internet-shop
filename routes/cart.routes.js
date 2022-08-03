@@ -1,50 +1,44 @@
 const {Router} = require("express");
-const Database = require("../db/Database");
+const CartsDatabase = require("../db/CartsDatabase");
 const router = Router();
 const auth = require("../middleware/auth.middleware")
-const db = new Database();
 
-router.get('/', auth, (req, res)=> {
+const db = new CartsDatabase();
+
+router.get('/', auth, async (req, res)=> {
     try {
-        db.getUserCartItems(req.user.id)
-            .then(result => {
-                return res.status(200).json(result);
-            })
-            .catch(e => res.status(500).json({message: "Что-то пошло не так, попробуйте снова"}))
+        const result = await db.getUserCartItems(req.user.id);
+        result.forEach(item => item.price *= item.count)
+        return  res.status(200).json(result);
     } catch (e) {
+        console.log(e)
         return res.status(500).json({
             message: "Что-то пошло не так, попробуйте снова"
         })
     }
 })
 
-router.post('/setCount', auth, (req, res) => {
+router.post('/setCount', auth, async (req, res) => {
     try {
-        const { itemId, count } = req.body;
-        db.changeItemCount(itemId, count)
-            .then(() => {
-                db.getItemPrice(itemId).then(price => {
-                    res.json({newPrice: price*count})
-                })
-            })
-            .catch(()=>res.status(500).json({
-                message: "Что-то пошло не так, попробуйте снова"
-            }))
+        await db.changeItemCount(req.user.id, req.body.id, req.body.newCount);
+        const result = (await db.getItemById(req.body.id))[0];
+        result.price *= result.count;
+        return  res.status(200).json(result);
     } catch (e) {
+        console.log(e);
         return res.status(500).json({
             message: "Что-то пошло не так, попробуйте снова"
         })
     }
 })
 
-router.post('/delete', auth, (req, res) => {
+router.post('/delete', auth, async (req, res) => {
     try {
         const {itemId} = req.body;
-        db.deleteUserItem(req.user.id, itemId)
-            .then(() =>res.status(200).json({message: "OK"}))
-            .catch(()=>res.status(500).json({
-                message: "Что-то пошло не так, попробуйте снова"
-            }))
+        await db.deleteItemFromCart(itemId);
+        return res.status(200).json({
+            message: "Ok"
+        })
     } catch (e) {
         return res.status(500).json({
             message: "Что-то пошло не так, попробуйте снова"
@@ -52,14 +46,11 @@ router.post('/delete', auth, (req, res) => {
     }
 })
 
-router.post('/add', auth, (req, res) => {
+router.post('/add', auth, async (req, res) => {
     try {
-        const {productTypeId, productId, sizeId} = req.body;
-        db.addCartItemInCart(req.user.id, productTypeId, productId, sizeId)
-            .then(() => res.status(200).json({message: "OK"}))
-            .catch(()=> res.status(500).json({
-                message: "Что-то пошло не так, попробуйте снова"
-            }))
+        const {productId, sizeId} = req.body;
+        await db.addItemInCart(productId, sizeId, req.user.id);
+        return res.status(200).json({message: "Ok"})
     } catch (e) {
         return res.status(500).json({
             message: "Что-то пошло не так, попробуйте снова"
@@ -67,16 +58,16 @@ router.post('/add', auth, (req, res) => {
     }
 })
 
-router.get('/:clotheType/:id', auth, (req, res) => {
+router.get('/:id', auth, async (req, res) => {
     try {
-        const clotheType = req.params.clotheType;
-        const id = parseInt(req.params.id);
-        db.getItemInUserCart(req.user.id, clotheType, id)
-            .then(result => {
-                return res.status(200).json(result);
-            })
-            .catch(e => res.status(500).json({message: "Что-то пошло не так, попробуйте снова"}))
+
+        const clotheId = req.params.id;
+        const result = await db.getItemInCart(clotheId, req.user.id);
+        if (result.sizes)
+            return res.status(200).json(result.sizes.split(", "))
+        return res.status(200).json([]);
     } catch (e) {
+        console.log(e);
         return res.status(500).json({
             message: "Что-то пошло не так, попробуйте снова"
         })

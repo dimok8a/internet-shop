@@ -15,7 +15,6 @@ export const MainPage: React.FunctionComponent = () => {
             <Navbar/>
             <Routes>
                 <Route element={<HomePage/>} path=""/>
-                <Route element={<ErrorPage/>} path="*"/>
                 <Route element={<MyPage/>} path={EUrl.my.url+"/*"}/>
                 <Route element={<ClothesPage clotheData={EUrl.tShirts}/>} path={EUrl.tShirts.url}/>
                 <Route element={<ItemPage/>} path={`${EUrl.tShirts.url}/:id`}/>
@@ -25,6 +24,7 @@ export const MainPage: React.FunctionComponent = () => {
                 <Route element={<ItemPage/>} path={`${EUrl.pants.url}/:id`}/>
                 <Route element={<ClothesPage clotheData={EUrl.polo}/>} path={EUrl.polo.url}/>
                 <Route element={<ItemPage/>} path={`${EUrl.polo.url}/:id`}/>
+                {/*<Route element={<ErrorPage/>}/>*/}
             </Routes>
         </>
     )

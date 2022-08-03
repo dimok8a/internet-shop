@@ -50,7 +50,7 @@ export const RegistrationPage: React.FunctionComponent = () => {
     const registerHandler = async () => {
         const newForm = {
             ...form,
-            hash: md5(form.email+form.password)
+            hash: md5(form.phone+form.password)
         }
         // @ts-ignore
         delete newForm.password
@@ -70,6 +70,15 @@ export const RegistrationPage: React.FunctionComponent = () => {
 
 
     }
+
+    function onFocusHandler(e:any) {
+        e.target.closest('div').classList.add('focused')
+    }
+
+    function onBlurHandler(e:any) {
+        if (!e.target.value)
+            e.target.closest('div')!.classList.remove('focused')
+    }
     return (
         <div className="reg__container">
             <div className="registration">
@@ -77,50 +86,71 @@ export const RegistrationPage: React.FunctionComponent = () => {
                 <div className="registr__container">
                     <div className="registr">
                         <div className="registr__cont">
+
                             <label htmlFor="mail"> {errors.email}</label>
+                            <div className="input_container"
+                                 onFocus={onFocusHandler}
+                                 onBlur={onBlurHandler}
+                            >
+                                <span>Укажите вашу электронную почту</span>
                             <input
                                 type="text"
-                                placeholder="Укажите вашу электронную почту"
                                 id="mail"
                                 name="email"
                                 onChange={changeHandler}
                             />
+                        </div>
                             <label htmlFor="name"> {errors.name}</label>
+                            <div className="input_container"
+                                 onFocus={onFocusHandler}
+                                 onBlur={onBlurHandler}
+                            >
+                                <span>Укажите ваше имя</span>
                             <input
                                 type="text"
-                                placeholder="Укажите ваше имя"
                                 id="name"
                                 name="name"
                                  onChange={changeHandler}
                             />
+                            </div>
                             <label htmlFor="phone"> {errors.phone}</label>
+                            <div className="input_container"
+                                 onFocus={onFocusHandler}
+                                 onBlur={onBlurHandler}
+                            >
+                                <span>Укажите ваш номер телефона (через 8)</span>
                             <input
                                 type="tel"
-                                placeholder="Укажите ваш номер телефона"
                                 id="log"
                                 name="phone"
                                  onChange={changeHandler}
                             />
+                            </div>
                             <label htmlFor="address"> {errors.address}</label>
+                            <div className="input_container"
+                                 onFocus={onFocusHandler}
+                                 onBlur={onBlurHandler}
+                            >
+                                <span>Укажите ваш адресс</span>
                             <input
                                 type="text"
-                                placeholder="Укажите ваш адресс"
                                 id="log"
                                 name="address"
                                  onChange={changeHandler}
                             />
+                            </div>
+                            <div className="input_container"
+                                 onFocus={onFocusHandler}
+                                 onBlur={onBlurHandler}
+                            >
+                                <span>Придумайте пароль</span>
                             <input
                                 type="password"
-                                placeholder="Придумайте пароль"
                                 id="pass1"
                                 name="password"
                                  onChange={changeHandler}
                             />
-                            <input
-                                type="password"
-                                placeholder="Повторите пароль"
-                                id="pass2"
-                            />
+                            </div>
                             <button
                                 id="btnRegistr"
                                 onClick={registerHandler}

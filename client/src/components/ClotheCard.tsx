@@ -1,11 +1,11 @@
 import React from "react";
 import {IClothe} from "../interfaces";
-
+import {Link} from "react-router-dom";
 
 export const ClotheCard:React.FunctionComponent<{ clothe: IClothe }> = (props) => {
     const clothe = props.clothe;
     return (
-            <a href={window.location.href + "/" + clothe.id.toString()} className="clothe_card">
+            <Link to={clothe.id.toString()} className="clothe_card">
                 <div className="clothe_card_cover">
                     <div className="card-image">
                         <img src={`${clothe.image}/M`}/>
@@ -17,6 +17,6 @@ export const ClotheCard:React.FunctionComponent<{ clothe: IClothe }> = (props) =
                         <p>{clothe.name}</p>
                     </div>
                 </div>
-            </a>
+            </Link>
     )
 }

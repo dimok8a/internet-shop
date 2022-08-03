@@ -27,6 +27,7 @@
 }
 .nav-wrapper #right_links i {
   padding: 0 5px;
+  pointer-events: none;
 }
 .nav-wrapper li a.active {
   background-color: #8e24aa;
