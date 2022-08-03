@@ -9,7 +9,7 @@ To install this project you have to write this in your terminal
 Then you have start your MySQL server (for example `XAMPP`)
 
 # Start
-To start this project you have to write this commands in your terminal
+To start this project you have to write this command in your terminal
 ### `npm run dev`
 Or you can just open file
 ### `start.bat`
