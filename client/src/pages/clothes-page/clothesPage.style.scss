@@ -6,7 +6,7 @@
   margin-top: 30px;
   padding: 0;
   border: 0;
-  img{
+  img {
     border-radius: 10px;
     margin-top: 20px;
     height: 310px;
@@ -15,8 +15,6 @@
 }
 
 .clothe_card{
-  /*border: 1px solid black;*/
-  /*border-radius: 20px;*/
   display: flex;
   flex-direction: column;
   margin: 35px 17.5px;
@@ -32,13 +30,12 @@
   position: relative;
   contain: strict;
   display: flex;
-  justify-content: center;
   align-items: center;
   height: 450px;
   border-radius: 20px;
   background: #fff;
   border: 1px solid #f3f3f3;
-  box-shadow: 0 0 7px -2px rgb(28 28 28 / 10%);
+  box-shadow: 0 0 7px -2px rgb(28, 28, 28), 10%;
   .card-name,
   .card-price{
     color: black;
@@ -47,6 +44,12 @@
   }
   .card-name{
     font-size: 1.1rem;
+    font-weight: 400;
+    margin-top: -10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* количество строк */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
   .card-price{
     font-weight: 500;
@@ -61,4 +64,60 @@
 
 .clothe_card_cover .btn{
   margin-bottom: 50px;
+}
+
+// === Adaptive ===
+@media screen and (max-width: 1080px) {
+  .clothes_list{
+    grid-template-areas: "A B";
+  }
+  .clothe_card{
+    margin: 20px 10px;
+  }
+}
+
+@media screen and (max-width: 720px) {
+  .clothe_card{
+    width: calc(100vw / 2 - 40px);
+    height: calc((100vw / 2 - 40px) * 1.4);
+    margin: 10px 5px;
+    .card-image {
+      display: flex;
+      justify-content: center;
+      img {
+        height: calc(calc((100vw / 2 - 40px) * 1.4) * 0.66);
+        width: auto;
+      }
+    }
+
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .clothe_card {
+    width: calc(100vw / 2 - 20px);
+    height: calc((100vw / 2 - 20px) * 1.4);
+    .card-price {
+      font-size: 1.2rem;
+    }
+    .card-image {
+      img {
+        height: calc(calc((100vw / 2 - 40px) * 1.4) * 0.7);
+        width: auto;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .clothe_card {
+    width: calc(100vw / 2 - 20px);
+    height: calc((100vw / 2 - 20px) * 1.7);
+    .card-image {
+      img {
+        height: calc(calc((100vw / 2 - 40px) * 1.4) * 0.7);
+        width: auto;
+      }
+    }
+  }
 }

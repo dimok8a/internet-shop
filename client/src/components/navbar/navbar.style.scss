@@ -1,29 +1,25 @@
-
-#nav-mobile li{
-  padding-left: 30px;
-}
-#nav-mobile li:first-child{
-  padding-left: 0;
-}
-
-#nav-mobile li a{
-  font-size: 20px!important;
-}
-
-
-.nav-wrapper {
+nav {
   display: flex;
-  height: 100%;
+  flex-direction: row;
+  width: 100%;
   justify-content: center;
-  #nav-mobile {
-    position: absolute;
-  }
-  #right_links {
+  background-color: #4A158B;
+  box-sizing: border-box;
+  align-items: center;
+  .main_links {
     display: flex;
-    margin-left: auto;
+    gap: 30px;
+    position: absolute;
+    font-size: 20px;
+  }
+  .right_links {
+    position: absolute;
+    right: 0;
+    display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 10px;
+    margin-right: 20px;
+    gap: 30px;
     i {
       padding: 0 5px;
       pointer-events: none;
@@ -33,5 +29,86 @@
     a.active {
       background-color: #8e24aa;
     }
+  }
+}
+
+.burger_menu {
+  display: none;
+  background-color: #ffffff;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+  svg {
+    transition: all 0.5s;
+    &:focus {
+      outline: none;
+      box-shadow: none;
+      background-color: #fff;
+    }
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.burger_menu_body {
+  &.active {
+    left: 0;
+  }
+  position: fixed;
+  top: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  transition: left 0.3s ease 0s;
+  text-align: center;
+  background-color: #ffffff;
+  margin-top: 70px;
+  padding-top: 30px;
+  left: -100%;
+  z-index: 10;
+  .point {
+    margin-bottom: 35px;
+    font-weight: 600;
+    font-family: Montserrat, sans-serif;
+    text-transform: uppercase;
+    line-height: 1.2;
+    font-size: 20px;
+    a {
+      color: black;
+    }
+    &:hover {
+      cursor: pointer;
+    }
+    &.active {
+      color: #860295;
+    }
+  }
+
+  .down_body {
+    position: absolute;
+    bottom: 70px;
+    width: 100%;
+  }
+}
+
+// === Adaptive ===
+@media screen and (max-width: 1080px) {
+  .burger_menu {
+    height: 100%;
+    position: relative;
+    right: 0;
+    background-color: #4A158B;
+    display: flex;
+    justify-content: right;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    svg {
+      width: 40px;
+      height: 30px;
+      margin-right: 20px;
+    }
+  }
+  nav {
+    display: none;
   }
 }

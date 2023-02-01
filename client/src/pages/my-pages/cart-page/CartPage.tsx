@@ -129,18 +129,22 @@ export const CartPage:React.FunctionComponent = () => {
                                     />)
                         }
                     </div>
-                    <div className="cart_total">
-                        <div className="total_title_price_container">
-                            <div className="total_title">Итого</div>
-                            {loading ? <Loader/>
-                            : <div className="total_price">{totalPrice} RUB</div>
-                            }
-                        </div>
-                        <div className="total_btn">
-                            <button onClick={addDeliveryHandler} className="btn">Заказать</button>
+                    <div className="cart_total_container">
+                        <div className="cart_total">
+                            <div className="total_title_price_container">
+                                <div className="total_title">Итого</div>
+                                {loading ? <Loader/>
+                                    : <div className="total_price">{totalPrice} RUB</div>
+                                }
+                            </div>
+                            <div className="total_btn">
+                                <button onClick={addDeliveryHandler} className="btn">Заказать</button>
+                            </div>
                         </div>
                     </div>
+
                 </div>
+                <div className="footer"></div>
             </div>
         </div>
     )

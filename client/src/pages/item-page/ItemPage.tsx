@@ -111,51 +111,66 @@ export const ItemPage: React.FunctionComponent = () => {
     if (error)
         return <ErrorPage/>
     return (
-        <div className="grid_wrapper">
-            <div onClick={changeMainPhotoHandler} className="sidebar">
-                {
-                    data.images.map((src, ind) => <img key={ind} src={"../" + src}/>)
-                }
-            </div>
-            <div className="item_image" style={{ backgroundImage: `url(${mainPhoto}` }}/>
-            <div className="right_menu">
-                <div className="item_opts">
-                    <div className="item_name">{data.name}</div>
-                    <div className="item_description">{data.description}</div>
-                    <div className="item_price">{data.price} RUB</div>
-                    <select onChange={selectItemHandler} className="item_select" name="size">
-                        <option disabled>Выберите размер товара</option>
+        <div className="item_page_container">
+            <div className="grid_wrapper">
+                <div className="left_menu">
+                    <div onClick={changeMainPhotoHandler} className="sidebar">
                         {
-                            data.sizes.map(sizeCount => {
-                                if (sizeCount.name){
-                                    return <option key={sizeCount.id} value={sizeCount.name}>{sizeCount.name}</option>
-                                }
-                            })
+                            data.images.map((src, ind) => <img key={ind} src={"../" + src}/>)
                         }
-                    </select>
-                    <div className="item_availability">В наличии: {selectSize.count} шт.</div>
-                    {!!token &&
-                    (sizesInCart.includes(selectSize.id) ?
-                        <button
-                            className="btn item_btn"
-                            disabled
-                            onClick={() => addItem()}
-                        >
-                            Уже в корзине
-                        </button>
-                        :
-                        <button
-                            className="btn item_btn"
-                            onClick={() => addItem()}
-                        >
-                            Добавить в корзину
-                        </button>)
-                    }
-                    {!token &&
-                        <Link to={EUrl.my.url}>Чтобы добавить в корзину, войдите или зарегистрируйтесь</Link>
-                    }
+                    </div>
+                    <div className="main_photo_container">
+                        <img src="../api/img/other/back.png" className="control_btn"/>
+                        <img src={mainPhoto} className="main_photo"/>
+                        <img src="../api/img/other/forward.png" className="control_btn"/>
+                    </div>
+                </div>
+                <div className="right_menu">
+                    <div className="item_opts">
+                        <div className="item_price">{data.price} RUB</div>
+                        <div className="item_name">{data.name}</div>
+                        <div className="item_description">
+                            <div className="item_description_title">
+                                Описание:
+                            </div>
+                            {data.description}</div>
+                        <select onChange={selectItemHandler} className="item_select" name="size">
+                            <option disabled>Выберите размер товара</option>
+                            {
+                                data.sizes.map(sizeCount => {
+                                    if (sizeCount.name){
+                                        return <option key={sizeCount.id} value={sizeCount.name}>{sizeCount.name}</option>
+                                    }
+                                })
+                            }
+                        </select>
+                        <div className="item_availability">В наличии: {selectSize.count} шт.</div>
+                        <div className="item_btn_container">
+                        {!!token &&
+                        (sizesInCart.includes(selectSize.id) ?
+                            <button
+                                className="btn item_btn"
+                                disabled
+                                onClick={() => addItem()}
+                            >
+                                Уже в корзине
+                            </button>
+                            :
+                            <button
+                                className="btn item_btn"
+                                onClick={() => addItem()}
+                            >
+                                Добавить в корзину
+                            </button>)
+                        }
+                        </div>
+                        {!token &&
+                            <Link to={EUrl.my.url}>Чтобы добавить в корзину, войдите или зарегистрируйтесь</Link>
+                        }
+                    </div>
                 </div>
             </div>
+            <div className="footer"></div>
         </div>
     )
 

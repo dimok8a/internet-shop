@@ -12,13 +12,11 @@ async function main() {
     app.use('/api/auth', require('./routes/auth.routes'))
     app.use('/api/cart', require('./routes/cart.routes'))
     app.use('/api/delivery', require('./routes/delivery.routes'))
-
-
 }
 
 
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.get("/", (req, res)=> {
     res.send('ok');
